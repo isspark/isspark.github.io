@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-cn,default">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Desperado">
+
+
+    <meta name="subtitle" content="xstar">
+
+
+
+
+<title>Java性能 | xstar</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">XSTAR</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">XSTAR</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Java性能</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Desperado</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十二月 16, 2021&nbsp;&nbsp;20:19:15</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="性能测试方法-性能测试4原则"><a href="#性能测试方法-性能测试4原则" class="headerlink" title="性能测试方法-性能测试4原则"></a>性能测试方法-性能测试4原则</h2><h3 id="原则1：测试真实应用"><a href="#原则1：测试真实应用" class="headerlink" title="原则1：测试真实应用"></a>原则1：测试真实应用</h3><p>性能测试应当在真实的使用环境中进行。性能测试大体分为3中：</p>
+<ul>
+<li>微基准测试</li>
+<li>宏基准测试</li>
+<li>介基准测试</li>
+</ul>
+<h4 id="微基准测试"><a href="#微基准测试" class="headerlink" title="微基准测试"></a>微基准测试</h4><p>看如下代码，试图使用微基准测试方法计算出第50个斐波那契数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTest</span><span class="params">()</span> </span>&#123; </span><br><span class="line">    <span class="comment">//主循环 </span></span><br><span class="line">    <span class="keyword">double</span> l; </span><br><span class="line">    <span class="keyword">long</span> then = System.currentTimeMillis(); </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nLoops; i++) &#123; </span><br><span class="line">        l = fibImpl1(<span class="number">50</span>); </span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">long</span> now = System.currentTimeMillis(); </span><br><span class="line">    System.out.println(<span class="string">&quot;Elapsed time: &quot;</span> + (now - then));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">double</span> <span class="title">fibImpl1</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Must be &gt; 0&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0d</span>;</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">1</span>) <span class="keyword">return</span> <span class="number">1d</span>;</span><br><span class="line">    <span class="keyword">double</span> d = fibImpl1(n - <span class="number">2</span>) + fibImpl(n - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (Double.isInfinite(d)) <span class="keyword">throw</span> <span class="keyword">new</span> ArithmeticException(<span class="string">&quot;Overflow&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该代码存在问题：</p>
+<ul>
+<li>未使用斐波那契数结果，编译器可能会讲循环去除。最终真正执行代码：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//主循环 </span></span><br><span class="line"><span class="keyword">double</span> l; </span><br><span class="line"><span class="keyword">long</span> then = System.currentTimeMillis();</span><br><span class="line"><span class="keyword">long</span> now = System.currentTimeMillis(); </span><br><span class="line">System.out.println(<span class="string">&quot;Elapsed time: &quot;</span> + (now - then));</span><br></pre></td></tr></table></figure>
+
+<p>可通过将变量L定义为实例变量（并用volatile声明）就可以测试；如果涉及到多线程还需要考虑资源竞争等导致的性能消耗，而不仅仅是程序代码导致的性能消耗。</p>
+<ul>
+<li>不要包含无关的操作。如果编译器足够智能，就会发现上面有些迭代时不必要的，从而减少迭代次数。</li>
+<li>必须输入合理的参数。在上面的代码中，如果输入参数超过合理的范围，需要思考对性能的影响是否时合理的。</li>
+</ul>
+<h4 id="宏基准测试"><a href="#宏基准测试" class="headerlink" title="宏基准测试"></a>宏基准测试</h4><p>整个系统的处理流程是复杂的，如果单纯的对某个模块进行测试而缺少关注全局，会导致忽略一些重要的问题。比如：影响系统吞吐量的不仅仅是JVM，还有数据库、网络等各方面的原因。宏基准测试就是站在一个更大的角度整体的测试整个系统的性能。</p>
+<h4 id="介基准测试"><a href="#介基准测试" class="headerlink" title="介基准测试"></a>介基准测试</h4>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Desperado</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://xstar.life/2021/12/16/JavaPerformance/">http://xstar.life/2021/12/16/JavaPerformance/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/Java-Performance/"># Java Performance</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2021/09/16/NginxGuid/">Nginx指引</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2021008460号-1</a>|© Desperado | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
