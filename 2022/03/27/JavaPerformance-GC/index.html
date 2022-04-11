@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-cn,default">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Desperado">
+
+
+    <meta name="subtitle" content="xstar">
+
+
+
+
+<title>Java性能-垃圾收集算法 | xstar</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">XSTAR</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">XSTAR</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Java性能-垃圾收集算法</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Desperado</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">三月 27, 2022&nbsp;&nbsp;17:59:47</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="垃圾收集算法"><a href="#垃圾收集算法" class="headerlink" title="垃圾收集算法"></a>垃圾收集算法</h2><h3 id="Throughput收集器"><a href="#Throughput收集器" class="headerlink" title="Throughput收集器"></a>Throughput收集器</h3><p><strong>新生代垃圾回收</strong></p>
+<p><img src="/image/throughput-minorgc.png" alt="Throughput收集器MinorGC"></p>
+<p>如上图，当新生代的Eden空间即将用尽时，收集器会把Eden空间所有对象挪走：一部分对象会被挪到Survivor空间（即上图中 S0 区域），其他会被移动到老年代。没有任何对象引用的会被回收。</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">17.806: [GC [PSYoungGen: 227983K-&gt;14463K(264128K)] 280122K-&gt;66610K(613696K), 0.0169320 secs] [Times: user=0.05 sys=0.00, real=0.02 secs]</span><br></pre></td></tr></table></figure>
+
+<p>输出日志如上，新生代的占用空间从回收之前的227983K到回收之后的14463K，新生代总空间为264128K。与此同时，堆的总空间从280122K减少到66610K，总空间为613696K。</p>
+<p>最后一部分表示时间，完成垃圾回收操作时间是0.02秒，程序消耗的CPU时间是0.05秒。程序消耗时间比垃圾回收时间更多的原因在于新生代垃圾回收会使用多个线程。</p>
+<p><strong>老年代垃圾回收</strong></p>
+<p><img src="/image/through-fullgc.png" alt="Throughput收集器老年代垃圾回收FullGC"></p>
+<p>老年代垃圾收集会回收新生代中所有对象（包括Survivor空间中的对象）。只有活跃对象或者已经经过压缩整理的对象会继续待在老年代空间中。</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">64.546: [Full GC [PSYoungGen: 15808K-&gt;0K(339456K)]</span><br><span class="line">[ParOldGen: 457753K-&gt;392528K(554432K)] 473561K-&gt;392528K(893888K) [PSPermGen: 56728K-&gt;56728K(115392K)], 1.3367080 secs] [Times: user=4.44 sys=0.01, real=1.34 secs]</span><br></pre></td></tr></table></figure>
+
+<p>老年代输出日志如上，新生代经过FullGC之后变为0K，老年代空间从457753K变成了392528K，这里永久代的空间大小并没有变化。这是因为在多数的Full GC中，永久代对象并不会并回收。但如果永久代空间耗尽，JVM就会发起Full GC回收永久代空间中的对象。</p>
+<blockquote>
+<p>注意：以上信息是在Java 7上面打印的信息。在Java 8中类似的信息我们可以在元空间中看到。</p>
+</blockquote>
+<p><strong>堆大小自适应调整和静态调整</strong></p>
+<p>Throughput收集器调优方案有两中取舍：</p>
+<ol>
+<li>时间和空间的取舍；</li>
+<li>完成垃圾回收所需时长；</li>
+</ol>
+<p>虽然增加堆的大小，可以降低触发垃圾回收的频率，但也会增加每次垃圾回收的时长，需要平衡这两者。</p>
+<p>Throughput默认是开启自适应调整堆以及分代的大小，可以通过以下参数来设置期望的性能指标：</p>
+<ul>
+<li>-XX:MaxGCPauseMillis=N，设定应用可承受的最大停顿时间。该值会影响Minior GC和Full GC，如果该值非常小，老年代也会非常小，会导致频繁的Full GC，谨慎设置该值，默认不设置。</li>
+<li>-XX:GCTimeRatio=N，设置希望应用程序在垃圾回收上花费的时间。公式如下：</li>
+</ul>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Throughput 表示期望应用程序线程工作时间占比（比如：95%，则GCTimeRatio = 19）</span><br><span class="line">GCTimeRatio = Throughput /(1 - Throughput)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：MaxGCPauseMillis 的优先级高于-Xms和-Xmx，一旦设置该值，新生代和老年代会随之进行调整，直至满足期望的停顿时间。对于大部分情况，默认的动态调整已能满足大部分的需求。</p>
+</blockquote>
+<h3 id="理解CMS收集器"><a href="#理解CMS收集器" class="headerlink" title="理解CMS收集器"></a>理解CMS收集器</h3><p><img src="/image/Cms-younggc.png" alt="CMS新生代垃圾回收"><br>CMS新生代垃圾回收和Throughput的新生代垃圾回收非常相似。</p>
+<p><img src="/image/cms-gc-period.png" alt="CMS并发垃圾回收"></p>
+<p>CMS会根据堆的使用情况启动<strong>并发回收</strong>，当堆的占用达到某个程度时，JVM会启动后台线程扫描堆，回收不用的对象。回收情况如上图所示，出现在老年代的空间不连续是由于CMS回收时不会对老年代空间进行整理。</p>
+<p>CMS的并发回收会有好几个阶段：</p>
+<ol>
+<li>初始标记阶段：主要任务是识别根可达的下一层对象，<strong>这个阶段会暂停所有应用线程</strong>。</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">## 初始标记阶段日志</span><br><span class="line">89.976: [GC [1 CMS-initial-mark: 702254K(1398144K)] 772530K(2027264K), 0.0830120 secs] [Times: user=0.08 sys=0.00, real=0.08 secs]</span><br><span class="line"></span><br><span class="line">## 702254K(1398144K)表示对象占用了老年代空间1398MB中的702MB空间</span><br><span class="line">## 772530K(2027264K)表示整个堆中，对象占用了2027MB中的772MB空间</span><br><span class="line">## 该阶段暂停了0.08秒</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>标记阶段：主要标记</li>
+</ol>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Desperado</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://xstar.life/2022/03/27/JavaPerformance-GC/">http://xstar.life/2022/03/27/JavaPerformance-GC/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/Java-Performance/"># Java Performance</a>
+                    
+                        <a href="/tags/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95/"># 垃圾收集算法</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2021/12/16/NetworkSecurity-xss/">网络安全-XSS攻击</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2021008460号-1</a>|© Desperado | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
