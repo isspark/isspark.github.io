@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-cn,default">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Desperado">
+
+
+    <meta name="subtitle" content="xstar">
+
+
+
+
+<title>Eureka架构原理入门 | xstar</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">XSTAR</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">XSTAR</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Eureka架构原理入门</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Desperado</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">六月 15, 2022&nbsp;&nbsp;11:19:42</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Eureka/">Eureka</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="Eureka概述"><a href="#Eureka概述" class="headerlink" title="Eureka概述"></a>Eureka概述</h2><p>Eureka作为SpringCloud系列里面重要的成员，他在分布式系统中扮演者举足轻重的角色。在大型的服务系统中，有大量的服务系统后台接口互相调用，如果服务之间之间调用，会出现复杂难以维护的调用关系。此时服务注册和发现服务应运而生。Eureka是Netflix开源的一款提供服务注册和发现的产品。它具有以下特性：</p>
+<ul>
+<li>高可用：服务端支持集群部署，服务有自我保护机制。</li>
+<li>可配置：可动态添加或删除集群节点，也可以调整超时或者线程配置。</li>
+<li>弹性：Eureka客户端缓存了注册表的信息，即便服务端关闭也可以正常运行。</li>
+<li>多区域部署</li>
+<li>可监控：Eureka可跟踪客户端和服务器中的信息，用来性能监控和警报。</li>
+</ul>
+<h2 id="Eureka架构"><a href="#Eureka架构" class="headerlink" title="Eureka架构"></a>Eureka架构</h2><p>Eureka官网架构如下：<br><img src="/image/eureka_architecture.png" alt="Eureka架构"></p>
+<p>Eureka Server：服务端，也就是注册中心；<br>Application Service：Eureka 客户端，服务提供者；<br>Application Client：Eureka 客户端，服务消费者；</p>
+<p>服务提供者启动后，向注册中心注册（register）服务，然后每30秒发送一次心跳（Renew）。如果Renew失败次数达到一定次数，注册中心就会下线服务，将该服务从注册信息中删除。消费者客户端启动后也会从注册中心拉取注册信息（Get Registry，每30秒一次）。 各个区域的注册中心也会将注册信息和续订同步到所有Eureka集群节点。</p>
+<h2 id="理解客户端服务端通信"><a href="#理解客户端服务端通信" class="headerlink" title="理解客户端服务端通信"></a>理解客户端服务端通信</h2><p>默认情况下，客户端以 STARTING 状态启动，这使客户端实例可以做一些针对应用程序初始化的一些操作。<br>然后会处于 UP 状态，应用程序可以接受请求。同时应用程序也可以注册健康检查回调，可以选择将实例状态修改为 DOWN。</p>
+<blockquote>
+<p>在 netflix 的应用中，还有一种OUT_OF_SERVICE 状态。主要用于将实例从流量中脱离，在出现问题时可轻松回滚。</p>
+</blockquote>
+<p>客户端会在心跳发生后的30秒后，向 Eureka 服务端注册信息。之后每30秒发送一次心跳更新租约，告诉 Eureka 服务端该实例处在活跃中。如果 Eureka 服务端在90秒内没有收到续订，就会从注册表中删除实例信息。</p>
+<p>客户端会从 Eureka 服务端获取注册列表，并缓存到本地。之后，客户端使用该信息去查找其他服务。之后每30秒增量从服务端更新注册信息。</p>
+<p>客户端可以发送一个取消请求，会将该实例信息从 Eureka 服务端的注册表中删除。</p>
+<blockquote>
+<p>注意：在Eureka的所有操作（Renew、Cancel、Register）可能需要一定的时间才能在Eureka 服务端得到体现，最后在所有客户端中体现。这事因为Eureka 服务端上的注册信息会定期刷新，然后同步到所有集群节点，最后同步到其他客户端。时延可能达到2分钟。</p>
+</blockquote>
+<p>默认客户端和服务端的通信采用 Jersey 或 Jackson 或 JSON 有效负载与服务端进行通信。</p>
+<h2 id="理解-Eureka-集群点对点通信"><a href="#理解-Eureka-集群点对点通信" class="headerlink" title="理解 Eureka 集群点对点通信"></a>理解 Eureka 集群点对点通信</h2><p>Eureka 客户端会优先和处在同一区域的 服务端进行通信，如果失败，则客户端则会故障转移到其他区域的服务端。</p>
+<p>一旦服务器开始接受流量请求，在服务端的所有操作都会复制到服务器知道所有其他对等节点。如果因为某些原因某个操作失败，会在下一次心跳进行协调，该心跳也会在所有服务器中进行复制。</p>
+<p>当服务器启动时，它会从相邻的对等节点获取所有的注册信息。如果获取失败，则会继续尝试其他对等节点。如果获取实例信息成功，服务器会根据实例信息来设置续订（Renew）的阙值，在任何时候，一旦续订（Renew）的百分比低于该配置的的百分比（通常15分钟内低于85%），服务器就会通过停止实例过期来保护当前实例的注册表的信息，防止服务都不可用。</p>
+<blockquote>
+<p>eureka.renewalPercentThreshold=[0.0, 1.0] 可设置自我保护开启的阙值；</p>
+<p>eureka.enableSelfPreservation=false 设置是否启用自我保护</p>
+</blockquote>
+<p>如果服务器无法从其他对等节点的服务器中获取实例信息，他会等待5分钟，客户端可以继续注册信息。服务器通过将流量仅倾斜到一组实例来努力不向客户端提供部分信息。</p>
+<p>如果节点之间通信中断会发生什么：</p>
+<ol>
+<li>对等节点之间心跳失败，导致服务器进入自我保护模式；</li>
+<li>服务注册可能部分服务端有，部分没有；</li>
+<li>网络通信恢复，对等直接之间差异的信息会恢复，保持最终的一致性；</li>
+</ol>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>1):<a target="_blank" rel="noopener" href="https://juejin.cn/post/7068065361312088095">注册中心对比和选型：Zookeeper、Eureka、Nacos、Consul和ETCD</a></p>
+<p>2):<a target="_blank" rel="noopener" href="https://github.com/Netflix/eureka/wiki/Understanding-eureka-client-server-communication">Understanding eureka client server communication</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Desperado</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://xstar.life/2022/06/15/eureka/">http://xstar.life/2022/06/15/eureka/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/JAVA/"># JAVA</a>
+                    
+                        <a href="/tags/SPRING-CLOUD/"># SPRING CLOUD</a>
+                    
+                        <a href="/tags/Eureka/"># Eureka</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/06/17/eurekaServerStart/">Eureka服务集群部署及启动过程分析</a>
+            
+            
+            <a class="next" rel="next" href="/2022/04/21/JavaReferenctType/">JavaReferenctType</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2021008460号-1</a>|© Desperado | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-cn,default">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Desperado">
+
+
+    <meta name="subtitle" content="xstar">
+
+
+
+
+<title>Java性能 | xstar</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">XSTAR</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">XSTAR</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Java性能</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Desperado</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十二月 16, 2021&nbsp;&nbsp;20:19:15</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="性能测试方法-性能测试4原则"><a href="#性能测试方法-性能测试4原则" class="headerlink" title="性能测试方法-性能测试4原则"></a>性能测试方法-性能测试4原则</h2><h3 id="原则1：测试真实应用"><a href="#原则1：测试真实应用" class="headerlink" title="原则1：测试真实应用"></a>原则1：测试真实应用</h3><p>性能测试应当在真实的使用环境中进行。性能测试大体分为3中：</p>
+<ul>
+<li>微基准测试</li>
+<li>宏基准测试</li>
+<li>介基准测试</li>
+</ul>
+<h4 id="微基准测试"><a href="#微基准测试" class="headerlink" title="微基准测试"></a>微基准测试</h4><p>看如下代码，试图使用微基准测试方法计算出第50个斐波那契数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTest</span><span class="params">()</span> </span>&#123; </span><br><span class="line">    <span class="comment">//主循环 </span></span><br><span class="line">    <span class="keyword">double</span> l; </span><br><span class="line">    <span class="keyword">long</span> then = System.currentTimeMillis(); </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nLoops; i++) &#123; </span><br><span class="line">        l = fibImpl1(<span class="number">50</span>); </span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">long</span> now = System.currentTimeMillis(); </span><br><span class="line">    System.out.println(<span class="string">&quot;Elapsed time: &quot;</span> + (now - then));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">double</span> <span class="title">fibImpl1</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Must be &gt; 0&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0d</span>;</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">1</span>) <span class="keyword">return</span> <span class="number">1d</span>;</span><br><span class="line">    <span class="keyword">double</span> d = fibImpl1(n - <span class="number">2</span>) + fibImpl(n - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (Double.isInfinite(d)) <span class="keyword">throw</span> <span class="keyword">new</span> ArithmeticException(<span class="string">&quot;Overflow&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该代码存在问题：</p>
+<ul>
+<li>未使用斐波那契数结果，编译器可能会讲循环去除。最终真正执行代码：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//主循环 </span></span><br><span class="line"><span class="keyword">double</span> l; </span><br><span class="line"><span class="keyword">long</span> then = System.currentTimeMillis();</span><br><span class="line"><span class="keyword">long</span> now = System.currentTimeMillis(); </span><br><span class="line">System.out.println(<span class="string">&quot;Elapsed time: &quot;</span> + (now - then));</span><br></pre></td></tr></table></figure>
+
+<p>可通过将变量L定义为实例变量（并用volatile声明）就可以测试；如果涉及到多线程还需要考虑资源竞争等导致的性能消耗，而不仅仅是程序代码导致的性能消耗。</p>
+<ul>
+<li>不要包含无关的操作。如果编译器足够智能，就会发现上面有些迭代时不必要的，从而减少迭代次数。</li>
+<li>必须输入合理的参数。在上面的代码中，如果输入参数超过合理的范围，需要思考对性能的影响是否时合理的。</li>
+</ul>
+<h4 id="宏基准测试"><a href="#宏基准测试" class="headerlink" title="宏基准测试"></a>宏基准测试</h4><p>整个系统的处理流程是复杂的，如果单纯的对某个模块进行测试而缺少关注全局，会导致忽略一些重要的问题。比如：影响系统吞吐量的不仅仅是JVM，还有数据库、网络等各方面的原因。宏基准测试就是站在一个更大的角度整体的测试整个系统的性能。</p>
+<h4 id="介基准测试"><a href="#介基准测试" class="headerlink" title="介基准测试"></a>介基准测试</h4><p>介基准测试相对于红基准测试是一种折中方案，在模块级别或者操作级别隔离性能来进行测试。它表示一些应用的实际操作，但不是完整应用的基准测试。</p>
+<h3 id="原则2：理解批处理流逝时间、吞吐量和响应时间"><a href="#原则2：理解批处理流逝时间、吞吐量和响应时间" class="headerlink" title="原则2：理解批处理流逝时间、吞吐量和响应时间"></a>原则2：理解批处理流逝时间、吞吐量和响应时间</h3><h4 id="批处理流逝时间"><a href="#批处理流逝时间" class="headerlink" title="批处理流逝时间"></a>批处理流逝时间</h4><p>批处理流逝时间主要关注执行完成任务花费的时间。但在Java世界中，需要特变关注代码优化的热身期：对于即时编译，虚拟机会花费一段时间优化代码以最高的性能去执行。初次之外，还有注入读取数据库时会应用缓存。</p>
+<h4 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h4><p>吞吐量表示一段时间内完成的工作量。在客户端-服务器的吞吐量测试中，吞吐量并不考虑客户端的处理时间。吞吐量仅表示在客户端发送请求到接受响应并持续发送请求的一个过程，在一定时间内，客户端请求响应的总数。通常时每秒完成的操作量。这个指标也被称作每秒事务数（TPS）、每秒请求数（RPS）、每秒操作数（OPS）。</p>
+<p>需要注意：吞吐量测试通常在程序的热身其之后进行。</p>
+<h4 id="响应时间"><a href="#响应时间" class="headerlink" title="响应时间"></a>响应时间</h4><p>响应时间表示从客户端发送请求到收到响应之间的流逝时间。</p>
+<h3 id="原则3：用统计方法来应对性能变化"><a href="#原则3：用统计方法来应对性能变化" class="headerlink" title="原则3：用统计方法来应对性能变化"></a>原则3：用统计方法来应对性能变化</h3><p>性能测试会随着时间的变化而产生不同的结果，因为有很多因素会影响程序运行：比如后台进程、网络拥堵等。这种随机性问题会导致测试不准确，对此可以对结果求平均来解决这个问题。</p>
+<h3 id="原则4：尽早频繁测试"><a href="#原则4：尽早频繁测试" class="headerlink" title="原则4：尽早频繁测试"></a>原则4：尽早频繁测试</h3><p>性能测试应该作为开发周期不可或缺的一部分。</p>
+<h2 id="Java性能调优工具箱"><a href="#Java性能调优工具箱" class="headerlink" title="Java性能调优工具箱"></a>Java性能调优工具箱</h2><h3 id="操作系统的工具和分析"><a href="#操作系统的工具和分析" class="headerlink" title="操作系统的工具和分析"></a>操作系统的工具和分析</h3><p>Unix：vmstat、iostat、prstat<br>Windows：typeperf</p>
+<h4 id="CPU使用率"><a href="#CPU使用率" class="headerlink" title="CPU使用率"></a>CPU使用率</h4><p>CPU使用率分为两类：</p>
+<ul>
+<li>用户态时间：CPU执行应用代码所占时间的百分比</li>
+<li>系统态时间：CPU执行内核代码所占时间的百分比</li>
+</ul>
+<p>系统态时间与应用相关，比如IO操作，系统会执行内核代码从磁盘读取文件，或者将缓冲数据发送到网络。</p>
+<p>性能调优的目的是尽可能的提高CPU的使用率。如果我们应用代码不能尽可能的使CPU的使用率达到100%，考虑一下原因：</p>
+<ul>
+<li>应用被同步原语阻塞，直至锁释放才能继续执行</li>
+<li>应用再等待某些东西，例如数据库调用所返回的响应</li>
+<li>应用的确无所事事</li>
+</ul>
+<p>在linux系统，我们可以通过 vmstat 命令查看CPU使用率</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">每秒统计一次</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> vmstat 1</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">执行结果如下：</span></span><br><span class="line">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----</span><br><span class="line"> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</span><br><span class="line"> 1  0      0 6318336   7356  32224    0    0     1   202    1    4  0  0 100  0  0</span><br><span class="line"> 0  0      0 6318336   7356  32224    0    0     0     0    5   26  0  0 100  0  0</span><br><span class="line"> 0  0      0 6318336   7356  32224    0    0     0     0    5   28  0  0 100  0  0</span><br><span class="line"> 0  0      0 6318336   7356  32224    0    0     0     0    5   29  0  0 100  0  0</span><br></pre></td></tr></table></figure>
+
+<p>字段说明如下：</p>
+<p>procs（进程信息字段）：</p>
+<ul>
+<li>r：等待运行的进程数，数量越大，系统越繁忙。</li>
+<li>b：不可被唤醒的进程数量，数量越大，系统越繁忙。</li>
+</ul>
+<p>memory（内存信息字段）:</p>
+<ul>
+<li>swpd：虚拟内存的使用情况，单位为 KB。</li>
+<li>free：空闲的内存容量，单位为 KB。</li>
+<li>buff：缓冲的内存容量，单位为 KB。</li>
+<li>cache：缓存的内存容量，单位为 KB。</li>
+</ul>
+<p>swap（交换分区信息字段）：</p>
+<ul>
+<li>si：从磁盘中交换到内存中数据的数量，单位为 KB。</li>
+<li>so：从内存中交换到磁盘中数据的数量，单位为 KB。</li>
+</ul>
+<blockquote>
+<p>这两个数越大，表明数据需要经常在磁盘和内存之间进行交换，系统性能越差。</p>
+</blockquote>
+<p>io（磁盘读、写信息字段）：</p>
+<ul>
+<li>bi：从块设备读入的数据的总量，单位是块。</li>
+<li>bo：写到块设备的数据的总量，单位是块。</li>
+</ul>
+<blockquote>
+<p>这两个数越大，代表系统的 I/O 越繁忙。</p>
+</blockquote>
+<p>system（系统信息字段）：</p>
+<ul>
+<li>in：每秒被中断的进程次数。</li>
+<li>cs：每秒进行的事件切换次数。</li>
+</ul>
+<blockquote>
+<p>这两个数越大，代表系统与接口设备的通信越繁忙。</p>
+</blockquote>
+<p>cpu（CPU信息字段）:</p>
+<ul>
+<li>us：非内核进程消耗 CPU 运算时间的百分比。</li>
+<li>sy：内核进程消耗 CPU 运算时间的百分比。</li>
+<li>id：空闲 CPU 的百分比。</li>
+<li>wa：等待 I/O 所消耗的 CPU 百分比。</li>
+<li>st：被虚拟机所盗用的 CPU 百分比。</li>
+</ul>
+<h4 id="CPU运行队列"><a href="#CPU运行队列" class="headerlink" title="CPU运行队列"></a>CPU运行队列</h4><p>Windows和Unix系统都可以监控可运行（意味着没有被I/O阻塞、休眠）的线程数，成为运行队列。Unix系统可通过 vmstat 的 procs字段的 r来查看可运行的线程数。</p>
+<h4 id="磁盘使用率"><a href="#磁盘使用率" class="headerlink" title="磁盘使用率"></a>磁盘使用率</h4><p>监控磁盘的两个目的：</p>
+<ol>
+<li>如果应用正在做大量的磁盘I/O操作，那么很容易成为瓶颈。</li>
+<li>有助于监控系统是否在进行内存交换。</li>
+</ol>
+<h4 id="网络使用率"><a href="#网络使用率" class="headerlink" title="网络使用率"></a>网络使用率</h4><p>网络使用率类似磁盘使用率：应用可能没有充分利用网络所有带宽很低，或者写入某网络接口的总数据量超过了它所能处理的量。</p>
+<p>Unix系统可以使用 netstat 或者nicstat 来查看网络使用率。</p>
+<h3 id="Java监控工具"><a href="#Java监控工具" class="headerlink" title="Java监控工具"></a>Java监控工具</h3><p>JDK自带工具列表:</p>
+<table>
+<thead>
+<tr>
+<th>工具命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>jcmd</td>
+<td>用来打印Java进程所涉及的基本类、线程、VM信息。</td>
+</tr>
+<tr>
+<td>jconsole</td>
+<td>提供JVM活动的图形化视图，包括线程的使用、类的使用和GC活动。</td>
+</tr>
+<tr>
+<td>jhat</td>
+<td>读取内存堆转储，帮助分析。事后使用的工具。</td>
+</tr>
+<tr>
+<td>jmap</td>
+<td>提供堆转储和其他JVM内存使用信息。</td>
+</tr>
+<tr>
+<td>jinfo</td>
+<td>查看JVM系统属性，可以动态设置一些系统属性。</td>
+</tr>
+<tr>
+<td>jstack</td>
+<td>转储Java进程的栈信息。</td>
+</tr>
+<tr>
+<td>jstat</td>
+<td>提供GC和类装载活动的信息。</td>
+</tr>
+<tr>
+<td>jvisualvm</td>
+<td>监视JVM的GUI工具，可用来剖析运行的应用，分析JVM堆转储。</td>
+</tr>
+</tbody></table>
+<p>这些工具广泛用于一下领域：</p>
+<ul>
+<li>基本的VM信息</li>
+<li>线程信息</li>
+<li>类信息</li>
+<li>实时GC分析</li>
+<li>堆转储的事后处理</li>
+<li>JVM性能分析</li>
+</ul>
+<h4 id="基本的VM信息"><a href="#基本的VM信息" class="headerlink" title="基本的VM信息"></a>基本的VM信息</h4><p>通过上面命令可以或许VM的基本信息：运行时间、使用了哪些JVM标识、JVM系统属性。</p>
+<p><strong>运行时间：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> jcmd process_id VM.uptime</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>系统属性(System.getProperties()里的配置):</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> jcmd process_id VM.system_properties</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 或者</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> jinfo -sysprops process_id</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>JVM版本:</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> jcmd process_id VM.version</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>JVM命令行:</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> jcmd process_id VM.command_line</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>JVM调优标识:</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 带上all时，会列出所有调优标识</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> jcmd process_id VM.flags  [-all]</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 该命令会输出如下标识，最后一列值含义如下</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># product：表示所有平台上的默认值都是一致的</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># pd product：表示默认值是独立于平台的</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># manageable：表示运行时可以动态修改标志的值</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># C2 diagnostic：为编译工程师提供诊断输出，帮助理解编译器正以什么方式运行</span></span></span><br><span class="line"></span><br><span class="line">uintx CMSAbortablePrecleanMinWorkPerIteration   = 100                                 &#123;product&#125;</span><br><span class="line">intx CMSAbortablePrecleanWaitMillis            = 100                                 &#123;manageable&#125;</span><br><span class="line">uintx CMSYoungGenPerWorker                      = 67108864                            &#123;pd product&#125;</span><br><span class="line">intx ValueMapMaxLoopSize                       = 8                                   &#123;C1 product&#125;</span><br><span class="line">intx ValueSearchLimit                          = 1000                                &#123;C2 product&#125;</span><br><span class="line">bool UseUnalignedLoadStores                    = true                                &#123;ARCH product&#125;</span><br><span class="line">bool UseCompressedOops                        := true                                &#123;lp64_product&#125;</span><br><span class="line">bool TraceClassLoading                         = false                               &#123;product rw&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 对于manageable的值，我们可以通过jinfo来开启和关闭，也可以用jinfo来检查单个标识的值</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> jinfo -flag PrintGCDetails process_id</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 关闭 PrintGCDetails</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> jinfo -flag -PrintGCDetails process_id</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="线程信息"><a href="#线程信息" class="headerlink" title="线程信息"></a>线程信息</h4><p>可以通过 jconsole 和 jvisualvm 直接以GUI的形式查看线程信息。也可以通过以下命令查看线程的栈信息（这个对判断线程是否阻塞很有用）：</p>
+<ul>
+<li>jstack process_id</li>
+<li>jcmd process_id Thread.print</li>
+</ul>
+<h4 id="类信息"><a href="#类信息" class="headerlink" title="类信息"></a>类信息</h4><p>可以通过 jconsole 或 jstat 查看应用使用类的个数。 jstat 还提供类编译相关的信息。</p>
+<h4 id="实时GC分析"><a href="#实时GC分析" class="headerlink" title="实时GC分析"></a>实时GC分析</h4><p>几乎所有的监控工具都能报告一些GC的活动信息。<br>jconsole 可以以实时图显示堆的使用情况；<br>jcmd 可以执行GC操作；<br>jmap 可以打印堆的概况、永久代信息或者创建堆的转储；<br>jstat 可以为垃圾收集器正在执行的操作生成许多试图；</p>
+<h4 id="事后堆转储"><a href="#事后堆转储" class="headerlink" title="事后堆转储"></a>事后堆转储</h4><p>堆转储是堆使用情况的快照。jvisiualvm 可以捕获堆转储。也可以使用 jcmd 和 jmap 生成堆转储。<br>分析堆转储可以使用 jvisiualvm 或者 jhat。也可以使用更为领先的第三方工具-Eclipse Memory<br>Analyzer Tool。</p>
+<h3 id="性能分析工具"><a href="#性能分析工具" class="headerlink" title="性能分析工具"></a>性能分析工具</h3><p>Java的众多性能分析工具各有优缺点，需要综合参考使用；<br>性能分析器开启与应用之间的socket，随后目标应用与性能分析工具交换应用的行为信息。这需要我们注意性能分析工具自身性能的调优。</p>
+<h4 id="采样分析器"><a href="#采样分析器" class="headerlink" title="采样分析器"></a>采样分析器</h4><p>性能分析有两种模式：数据采样和数据探查。</p>
+<p>数据采样时最常用的分析器。由于采样分析器采样频率相对较低，所以失真也较小。</p>
+<p>探查分析器可以给出更多的应用信息，比如方法的调用次数，但同样侵入性更强，对应用的影响也更大。<br>探查分析器应该仅在小代码区域（一些类或者包）中设置使用，以限制对应用的影响。</p>
+<h4 id="阻塞方法和线程时间线"><a href="#阻塞方法和线程时间线" class="headerlink" title="阻塞方法和线程时间线"></a>阻塞方法和线程时间线</h4><p>NetBean 性能分析器可以报告被阻塞方法和花费时间。可以通过分析阻塞原因来整体提升系统的性能。</p>
+<p>Oracle Solaris Studio性能分析工具可以呈现线程的时间线，通过时间线分析可以辨认出阻塞的线程。</p>
+<h4 id="本地分析器"><a href="#本地分析器" class="headerlink" title="本地分析器"></a>本地分析器</h4><p>本地性能分析工具是指 JVM 自身性能工具，它可以提供JVM和应用代码内部的信息。</p>
+<p>Oracle Solaris Studio分析器是一个本地分析器</p>
+<p>如果本地分析器显示GC占用了主要的CPU时间，优化垃圾收集器是正确的做法。然而如果显示编译器线程占用了CPU主要时间，则说明通常对性能没什么影响。</p>
+<h3 id="Java任务控制"><a href="#Java任务控制" class="headerlink" title="Java任务控制"></a>Java任务控制</h3><p>商业版Java提供的JMC（Java Mission Controller）可以监控CPU使用率、堆使用量等信息。</p>
+<p>JMC的关键特性就是Java飞行记录器JFR（Java Flight Recorder）。</p>
+<h2 id="垃圾收集"><a href="#垃圾收集" class="headerlink" title="垃圾收集"></a>垃圾收集</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><h4 id="分代垃圾收集器"><a href="#分代垃圾收集器" class="headerlink" title="分代垃圾收集器"></a>分代垃圾收集器</h4><p>垃圾收集器根据情况将堆划分为不同的区：</p>
+<ul>
+<li>老年代（Old Generation）</li>
+<li>新生代（Young Generation）<ul>
+<li>Eden</li>
+<li>Survivor</li>
+</ul>
+</li>
+</ul>
+<p>采用分代机制的原因在于很多对象的生存时间非常短，所有新生的对象都在新生代中，进行垃圾回收时，相较于在整个堆空间进行，在新生代空间进行有两个优势：</p>
+<p>1.处理速度更快；<br>2.在移动对象的时候，比如从Eden移动到Survivor时，可以进行压缩整理；</p>
+<p>一般垃圾收集器在进行垃圾收集时，会禁止线程访问对象，赞成<em>时空停顿</em>（stop-the-world）。当新生代填满时，回收新生代空间和不再使用的对象，这称为<em>Minor GC</em>。当对象不断的移动到老年代，导致老年代空间被填满时，垃圾收集器会堆整个堆进行内存回收，这个过程称为<em>FUll GC</em></p>
+<p>通过复杂的计划，有些垃圾收集器可以尽可能做到最小的停顿。比如：CMS 和 C1收集器就被称为低停顿（Low-Pause）收集器。但也由此付出了更多的CPU计算量。所以我们在考虑选用哪种垃圾收集器时，可以根据对应用停顿时间要求和容忍度来进行选择。</p>
+<h4 id="GC算法"><a href="#GC算法" class="headerlink" title="GC算法"></a>GC算法</h4><p>JVM提供了4种垃圾收集算法：</p>
+<ol>
+<li><p><strong>Serial垃圾收集器</strong></p>
+<ul>
+<li>使用单线程清理堆内容。</li>
+<li>Minor GC和Full GC时所有应用程序会暂停。</li>
+<li>-XX:+UseSerialGC可以启用Serial收集器。关闭需要指定其他垃圾收集器。</li>
+</ul>
+</li>
+<li><p><strong>Throughput垃圾收集器</strong></p>
+<ul>
+<li>使用多线程清理新生代、老年代空间，JDK 7u4之后默认开启老年代清理使用u多线程。</li>
+<li>Minor GC和Full GC时会暂停所有应用线程。-XX:+UseParallelGC 、-XX:+UseParallelOldGC 标志启用Throughput垃圾收集器。</li>
+</ul>
+</li>
+<li><p><strong>CMS收集器</strong></p>
+<ul>
+<li>Minor GC会暂停所有的应用程序；Full GC 不会暂停应用线程，会使用若干个后台线程定期的堆老年代空间进行扫描，及时回收空间。</li>
+<li>更高的CPU消耗。</li>
+<li>不会对堆空间进行压缩整理。如果堆变得过度碎片化导致无法找到连续的空间分配对象或无法获得完成任务所需大的CPU资源则会蜕化成Serial收集器行为：暂停所有应用线程，使用单线程回收、整理老年代空间。</li>
+<li>通过-XX:UseConcMarkSweepGC、-XX:UseParNewGC标志启用(默认两个都是禁用)</li>
+</ul>
+</li>
+<li><p><strong>G1垃圾收集器</strong></p>
+<ul>
+<li>适用于处理超大堆空间（大于4G）。</li>
+<li>新生代区域暂停所有应用线程，使用多线程。</li>
+<li>老年代被划分为多个区域，会对空间进行整理。</li>
+<li>Full GC会消耗额外的CPU周期</li>
+<li>通过-XX:+UseG1GC 可以使用G1垃圾收集器(默认关闭)</li>
+</ul>
+</li>
+</ol>
+<h4 id="GC算法选择"><a href="#GC算法选择" class="headerlink" title="GC算法选择"></a>GC算法选择</h4><ul>
+<li>Serial 收集器适用于应用程序内存使用少于 100MB 的场景；</li>
+<li>Throughput 收集器和 CMS 收集器之间选择依据可用的空闲的CPU资源。通常情况下，Throughput 的平均响应时间要比 Concurrent 收集器差些；</li>
+<li>CMS 收集器和 G1 收集器选择：一般情况下，堆空间小于4G，CMS收集器性能比G1收集器好。</li>
+</ul>
+<h3 id="GC-调优基础"><a href="#GC-调优基础" class="headerlink" title="GC 调优基础"></a>GC 调优基础</h3><h4 id="调整堆的大小"><a href="#调整堆的大小" class="headerlink" title="调整堆的大小"></a>调整堆的大小</h4><p>对于堆大小，并非是越大越好，更大的堆空间意味着更大的停顿时间，而且如果堆空间设置超过系统物理内存空间，会导致操作系统使用虚拟内存空间，进一步降低GC的性能。</p>
+<p>设置堆的大小应考虑的因素：物理硬件内存大小、系统运行本身需要的内存大小、以及JVM自身及其他应用程序的预留空间；</p>
+<p>Linux 64位 堆默认配置：</p>
+<ul>
+<li>Xms: Min(512MB,物理内存/64)</li>
+<li>Xmx: Min(32GB,物理内存/4)</li>
+</ul>
+<blockquote>
+<p>针对需要调整堆大小的一个经验法则：Full GC 之后应该释放出30%的空间。可以通过 jconsole 连接应用强制 GC 来观察，或者 GC 日志。</p>
+</blockquote>
+<h4 id="代空间调整"><a href="#代空间调整" class="headerlink" title="代空间调整"></a>代空间调整</h4><p>年轻代空间设置参数如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-XX:NewRatio=N 设置新生代和老年代空间占用比率，默认值2</span><br><span class="line">-XX:NewSize=N 设置新生代空间初始大小,优先级高于 NewRatio</span><br><span class="line">-XX:MaxNewSize=N 设置新生代空间最大大小</span><br><span class="line">-XmnN 将NewSize和MaxNewSize设置为一样大小</span><br></pre></td></tr></table></figure>
+
+<p>根据NewRation我们可以计算初始年轻代空间大小：</p>
+<p>初始年轻代空间大小 = 初始堆空间大小 / （ 1 + NewRation )</p>
+<p>永久代/元空间的默认大小</p>
+<p>64位JVM：初始大小-20.75MB;默认永久代最大值-82MB;默认元空间最大值：没有限制；</p>
+<p>-XX:PermSize=N 设置初始永久代空间大小；<br>-XX:MaxPermSize=N 设置最大永久代空间大小；</p>
+<p>-XX:MetaspaceSize=N 设置初始元空间大小<br>-XX:MaxMetaspaceSize=N 设置最大元空间大小</p>
+<h4 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h4><p>除 Serial 收集器外，其他几乎都是使用多线程来进行垃圾回收的。启动的线程数有 <strong>-XX:ParallelGCThreads=N</strong> 参数控制。针对下面操作，会影响线程数目：</p>
+<ul>
+<li>-XX:+UseParallelGC 收集新生代空间</li>
+<li>-XX:+UseParallelOldGC 收集老年代空间</li>
+<li>-XX:+UseParNewGC 收集新生代空间</li>
+<li>-XX:+UseG1GC 收集新生代空间</li>
+<li>CMS收集器的“时空停顿”阶段</li>
+<li>G1收集器的“时空停顿”阶段</li>
+</ul>
+<p>当N&lt;8时，默认时每个CPU启动一个线程,N &gt; 8 默认启动线程数算法如下：</p>
+<p>ParallelGCThreads = 8 + ((N-8) * 5/8 )</p>
+<blockquote>
+<p>其中N代表CPU数。</p>
+</blockquote>
+<p>注意：当机器上同时运行多个JVM时，这时最好限制所有JVM的线程数。针对核心数非常多的机器，运行一个JVM时，也需要适当的调整改参数。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Desperado</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://xstar.life/2021/12/16/JavaPerformance/">http://xstar.life/2021/12/16/JavaPerformance/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/Java-Performance/"># Java Performance</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2021/12/16/NetworkSecurity-xss/">网络安全-XSS攻击</a>
+            
+            
+            <a class="next" rel="next" href="/2021/12/01/RedirectAndLB/">重定向和负载均衡</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2021008460号-1</a>|© Desperado | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

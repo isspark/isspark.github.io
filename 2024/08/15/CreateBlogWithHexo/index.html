@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-cn,default">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Desperado">
+
+
+    <meta name="subtitle" content="xstar">
+
+
+
+
+<title>Hexo博客搭建 | xstar</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">XSTAR</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">XSTAR</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Hexo博客搭建</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Desperado</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">八月 15, 2024&nbsp;&nbsp;11:19:42</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Blog/">Blog</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><ul>
+<li>  Windows 10</li>
+<li>  Git</li>
+<li>  NodeJs</li>
+<li>  Gitee 账号</li>
+<li>  Github 账号</li>
+<li>  域名一个（可选）</li>
+</ul>
+<h3 id="本地搭建"><a href="#本地搭建" class="headerlink" title="本地搭建"></a>本地搭建</h3><p>在新建的hexo 目录下执行</p>
+<ol>
+<li><p>cnpm 安装Hexo</p>
+<blockquote>
+<p>cnpm install -g hexo-cli<br>cnpm install hexo –save</p>
+</blockquote>
+</li>
+<li><p>检查Hexo是否安装成功</p>
+<blockquote>
+<p>hexo -v</p>
+</blockquote>
+</li>
+<li><p>在hexo目录下新建目录hexo-blog，并执行命令</p>
+<blockquote>
+<p>hexo init</p>
+</blockquote>
+<p> node_modules: 依赖包<br> public：存放生成的页面<br> scaffolds：生成文章的一些模板<br> source：用来存放你的文章<br> themes：放下下载的主题<br> _config.yml: 博客的核心配置文件（设置主体、标题等属性）</p>
+</li>
+<li><p>执行下面命令</p>
+<blockquote>
+<p>cnpm install</p>
+</blockquote>
+</li>
+<li><p>启动安装好的hexo</p>
+<blockquote>
+<p>hexo s -g</p>
+</blockquote>
+</li>
+<li><p> 访问：<a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000</a></p>
+</li>
+</ol>
+<h3 id="安装主题"><a href="#安装主题" class="headerlink" title="安装主题"></a>安装主题</h3><ol>
+<li><p>挑选主题</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://hexo.io/themes/">https://hexo.io/themes/</a></p>
+</blockquote>
+</li>
+<li><p>已A-Ayer主题为例，在hexo/hexo-blog目录下执行命令：</p>
+<blockquote>
+<p>git clone <a target="_blank" rel="noopener" href="https://github.com/Siricee/hexo-theme-Chic.git">https://github.com/Siricee/hexo-theme-Chic.git</a> themes/Chic</p>
+</blockquote>
+<p> <strong>注意：如果很慢的话可在末尾添加 –depth=1</strong></p>
+<blockquote>
+<p>depth用于指定克隆深度，为1即表示只克隆最近一次commit.</p>
+</blockquote>
+</li>
+<li><p>修改配置文件_config.xml配置</p>
+<blockquote>
+<p>theme: Chic</p>
+</blockquote>
+</li>
+<li><p>启动hexo即可</p>
+<blockquote>
+<p>hexo s -g</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="托管Gitee"><a href="#托管Gitee" class="headerlink" title="托管Gitee"></a>托管Gitee</h3><ol>
+<li><p> 新建仓库hexo-blog</p>
+</li>
+<li><p> 修改_config.yml文件，添加你创建的itee仓库地址</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">type: git</span><br><span class="line">repo: &lt;https:&#x2F;&#x2F;gitee.com&#x2F;isspark&#x2F;hexo-blog.git&gt;</span><br><span class="line">branch: master</span><br></pre></td></tr></table></figure></li>
+<li><p> 发布</p>
+</li>
+<li><p>安装自动部署发布工具:cnpm install hexo-deployer-git –save</p>
+</li>
+<li><p>发布：hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</p>
+</li>
+<li><p>进入Gitee在仓库，服务-&gt;Gitee Pages,采用默认配置，点击更新即可</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>如有样式问题，修改_config.yml中配置</strong></p>
+</blockquote>
+<h3 id="托管Github"><a href="#托管Github" class="headerlink" title="托管Github"></a>托管Github</h3><ol>
+<li><p> 创建GitHub仓库,并命名xxxx.github.io,建议xxxx替换为你Github的账号名</p>
+</li>
+<li><p> 配置_config.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">type: git</span><br><span class="line">repo: &lt;git@github.com&gt;\:isspark&#x2F;isspark.github.io.git</span><br><span class="line">branch: master</span><br></pre></td></tr></table></figure></li>
+<li><p> 发布</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 安装自动部署发布工具</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> cnpm install hexo-deployer-git --save</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 发布:执行下面命令后，进入Gitee在仓库，服务-&gt;Gitee Pages,采用默认配置，点击更新即可</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span></span><br></pre></td></tr></table></figure></li>
+<li><p> 自定义域名</p>
+</li>
+</ol>
+<ul>
+<li>将域名指向GitHub的服务器地址， 192.30.252.153 和 192.30.252.154</li>
+<li>进入存放博客的GitHub仓库，点击settings，设置Custom domain，输入www.crazyz.cn</li>
+<li>本地博客文件source中创建一个名为CNAME文件，不要后缀。写上内容你的域名</li>
+<li>发布：hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</li>
+</ul>
+<h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><h4 id="生成标签和分类"><a href="#生成标签和分类" class="headerlink" title="生成标签和分类"></a>生成标签和分类</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">## 生成标签</span><br><span class="line">&gt; hexo new page tags</span><br><span class="line">INFO  Created: ~&#x2F;Documents&#x2F;blog&#x2F;source&#x2F;tags&#x2F;index.md</span><br><span class="line">## 生成分类</span><br><span class="line">hexo new page categories</span><br><span class="line">INFO  Created: ~&#x2F;Documents&#x2F;blog&#x2F;source&#x2F;categories&#x2F;index.md</span><br></pre></td></tr></table></figure>
+
+<h4 id="对文章进行分类和添加标签"><a href="#对文章进行分类和添加标签" class="headerlink" title="对文章进行分类和添加标签"></a>对文章进行分类和添加标签</h4><p>在文章文件头部添加下列：</p>
+<pre><code>---
+categories: 
+- Git
+tags:
+- Git
+- 表格
+- 表单验证
+---
+</code></pre>
+<h3 id="常见错误"><a href="#常见错误" class="headerlink" title="常见错误"></a>常见错误</h3><h4 id="设置了tag和category，但是没有显示出来"><a href="#设置了tag和category，但是没有显示出来" class="headerlink" title="设置了tag和category，但是没有显示出来"></a>设置了tag和category，但是没有显示出来</h4><p>1.设置/tags/index.md 和 /categories/index.md如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: tags</span><br><span class="line">type: tags</span><br><span class="line">layout: tag</span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">title: categories</span><br><span class="line">type: categories</span><br><span class="line">layout: category</span><br><span class="line">---</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>2.注意，在上文的layout值需要与主题文件夹下的/layout对应的tag和category 后缀ejs文件对应</p>
+<h4 id="config-yml配置说明"><a href="#config-yml配置说明" class="headerlink" title="_config.yml配置说明"></a>_config.yml配置说明</h4><blockquote>
+<p><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/configuration.html">https://hexo.io/zh-cn/docs/configuration.html</a></p>
+</blockquote>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Desperado</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://xstar.life/2024/08/15/CreateBlogWithHexo/">http://xstar.life/2024/08/15/CreateBlogWithHexo/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/HEXO/"># HEXO</a>
+                    
+                        <a href="/tags/BLOG/"># BLOG</a>
+                    
+                        <a href="/tags/GITHUB-BLOG/"># GITHUB BLOG</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2023/01/27/StrategyPattern/">StrategyPattern</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2021008460号-1</a>|© Desperado | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

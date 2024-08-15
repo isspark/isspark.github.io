@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-cn,default">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Desperado">
+
+
+    <meta name="subtitle" content="xstar">
+
+
+
+
+<title>设计模式概述 | xstar</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">XSTAR</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">XSTAR</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/categories">Categories</a>
+                
+                    <a class="menu-item" href="/tags">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">设计模式概述</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Desperado</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 13, 2021&nbsp;&nbsp;20:46:25</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="设计模式定义"><a href="#设计模式定义" class="headerlink" title="设计模式定义"></a>设计模式定义</h2><ul>
+<li><p>一般定义：<br>设计模式(Design Pattern)是一套被反复使用、多数人知晓的、经过分类编目的、代码设计经验的总结，使用设计模式是为了复用代码、让代码更容易被他人理解并且保证代码可靠性。</p>
+</li>
+<li><p>狭义定义：<br>指GoF在《设计模式：可复用面向对象软件的基础》一书中所介绍的23种经典设计模式</p>
+</li>
+</ul>
+<h2 id="为什么要学习设计模式"><a href="#为什么要学习设计模式" class="headerlink" title="为什么要学习设计模式"></a>为什么要学习设计模式</h2><p>设计模式的提出，本身就是基于众多经验的最佳实践。通过学习模式，我们能写出更为优雅、简洁、易维护的代码</p>
+<h2 id="如何学习设计模式"><a href="#如何学习设计模式" class="headerlink" title="如何学习设计模式"></a>如何学习设计模式</h2><p>软件模式是在软件开发中对某些重复出现的问题的一些有效解决方案，主要由下图组成。问题描述表达了设计模式适合的场景，前提条件是指设计模式应用的必要条件，而解法是针对特定场景和条件的有效解决方案，解法并不是最终的目的，我们还要明白特定的场景和条件存在不同的解法，而每一种解法都有其优势和劣势，更多时候是一道选择题，效果正是采用特定场景的最佳方案后的结果。</p>
+<figure class="highlight graph"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">问题描述--&gt;前提条件</span><br><span class="line">前提条件--&gt;A[解法]</span><br><span class="line">A--&gt;其他相关模式</span><br><span class="line">A--&gt;效果</span><br><span class="line">A--&gt;关联解法</span><br></pre></td></tr></table></figure>
+
+<p>所以在学习设计模式的过程中，我们一定明白每一种模式的优缺点以及试用场景，可能在某种场景下可以应用多种设计模式，而选择哪一种模式需要针对具体场景和偏好来进行取舍。<br>每一种设计模式，我们都要明白他是符合哪些设计原则，在什么情况下使用该模式，该设计模式的优缺点。以及设计模式应用的实现和案例。<br><img src="/image/designRules.png" alt="7rules"></p>
+<h2 id="设计模式基本原则"><a href="#设计模式基本原则" class="headerlink" title="设计模式基本原则"></a>设计模式基本原则</h2><p>设计原则是大量实践和优秀设计方案总结出来的指导性准则，目的是让我们在软件的开发设计中，尽可能的提高代码的可复用和可维护性。我们在学习设计模式的过程中，会发现每种设计模式都遵循这其中的某些原则。</p>
+<h3 id="单一职责原"><a href="#单一职责原" class="headerlink" title="单一职责原"></a>单一职责原</h3><p>单一职责是指一个类不应该承载过多的功能，要提高复用，要根据不同的职责，尽可能的简化类。比如，我们要写一个查询数据库的方法。按照java的模式，要去先获取数据库链接，再执行增删改查。这里面获取数据库连接是我们每次执行数据库操作都需要的，所以我们可以把获取连接的操作单独作为一个类的功能，每次执行数据库操作的时候只需要执行方法即可。这提高了代码的复用。</p>
+<p><strong>总结</strong>：一个类负责一个功能领域中的相应职责</p>
+<p><strong>code：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">待更新</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h3><p>开闭原则是指软件实体应尽量在不修改原有代码的前提下进行扩展。当我们在面对新的需求变动时，应该尽量遵守不修改原有的代码的前提下，对功能进行扩展。在Java中，我们可以通过接口的不同实现或者抽象类来对功能进行扩展。</p>
+<p><strong>一总结</strong>：对扩展开放，对修改关闭</p>
+<p><strong>code：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">待更新</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="里氏替换原则"><a href="#里氏替换原则" class="headerlink" title="里氏替换原则"></a>里氏替换原则</h3><p>里氏替换原则是指所有引用基类的地方必须透明的使用其子类对象。在Java中，可以通过继承来实现，在任何使用父类的地方，我们可以将其替换成子类而不会报任何错误。而子类在继承了父类的属性和方法时，又可以对其进行扩展和修改。</p>
+<p><strong>总结</strong>：所有引用基类对象的地方能够透明的使用其子类的对象</p>
+<p><strong>code：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">待更新</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a>依赖倒置原则</h3><p>依赖倒置原则是指在模块实现的过程中，涉及到模块间的依赖关系时，应当尽量依赖抽象类或接口，而接口或抽象类不应该依赖具体的实现类。在Java中，具体类的对象可通过构造器、Setter方法、接口注入来实现依赖注入。</p>
+<p><strong>总结</strong>结：抽象不应该依赖细节，细节应该依赖于抽象</p>
+<p><strong>code：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">待更新</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="接口隔离原则"><a href="#接口隔离原则" class="headerlink" title="接口隔离原则"></a>接口隔离原则</h3><p>当一个接口拥有很多方法时，对于客户端，可能只是需要接口中少量的方法，对于实现类，过多的方法也不利于类的维护，所以，我们在设计接口的时候，应当根据客户端的具体需求或业务需求，尽可能的让接口方法数量保持合理的范围。</p>
+<p><strong>总结</strong>：使用多个专门的接口，而不使用单一的接口</p>
+<p><strong>code：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">待更新</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="合成复用原则"><a href="#合成复用原则" class="headerlink" title="合成复用原则"></a>合成复用原则</h3><p>合成复用原则是指在软件开发过程中，尽量使用聚合/合成，即在一个对象里使用另外个对象时，应该尽量通过组合(Java中表现通过Setter注入方式)来实现复用，而不是继承。因为继承方式会增加类之间的耦合关系。一旦父类作出改变，也会影响到子类的使用，而通过组合方式，可以通过注入不同的实现来达到在不改变原来的代码下实现修改。</p>
+<p><strong>总结</strong>：尽量使用组合，而不是通过继承来达到复用的目的</p>
+<p><strong>code：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">待更新</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="迪米特原则"><a href="#迪米特原则" class="headerlink" title="迪米特原则"></a>迪米特原则</h3><p>迪米特原则要求我们在设计软件时，各个对象的交互应该尽量的减少，如果对象之间不需要进行直接的交互，可以通过引用第三方来进行通信。比如老师和学生之间的关系，老师可以通过班长来进行信息的传达，这样，老师只需要和班长进行交流，而班长来负责向每个学生传达老师的信息。</p>
+<p><strong>总结</strong>：一个软件实体应当尽可能少的与其他实体发生相互作用</p>
+<p><strong>code：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">待更新</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Desperado</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://xstar.life/2021/04/13/DesignPatternIntro/">http://xstar.life/2021/04/13/DesignPatternIntro/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"># 设计模式</a>
+                    
+                        <a href="/tags/Design-Pattern-Introduction/"># Design Pattern Introduction</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2021/04/29/BuildHexo/">Hexo搭建及基础操作</a>
+            
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2021008460号-1</a>|© Desperado | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
